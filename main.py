@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
 from app.database import engine
 from app.models import Base
 from app.routes import auth, users, products, orders
@@ -15,18 +13,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["*"]   # or ["fastapi-e-commerce.onrender.com"]
-)
-
-# 🔥 Correct CORS middleware
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://e-commerce-front-ebon.vercel.app",  # Vercel frontend
-        "http://localhost:5173",                     # Local dev (vite)
-    ],
+        "https://e-commerce-front-ebon.vercel.app",  # your vercel frontend
+        "http://localhost:8000",
+    ],  # In production, specify actual origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,4 +39,3 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
