@@ -2,9 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine
 from app.models import Base
-from app.routes import auth, users, products, orders
 
-# Create database tables
+from app.routes.auth import router as auth_router
+from app.routes.users import router as users_router
+from app.routes.products import router as products_router
+from app.routes.orders import router as orders_router
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -13,24 +16,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://e-commerce-front-ebon.vercel.app",  # your vercel frontend
+        "https://e-commerce-front-ebon.vercel.app",
         "http://localhost:8000",
-    ],  # In production, specify actual origins
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(products.router)
-app.include_router(orders.router)
-
+app.include_router(auth_router)
+app.include_router(users_router)
+app.include_router(products_router)
+app.include_router(orders_router)
 
 @app.get("/")
 def read_root():
